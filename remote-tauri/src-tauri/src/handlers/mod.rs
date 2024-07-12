@@ -23,8 +23,11 @@ pub async fn init(app: AppHandle) -> std::io::Result<()> {
             .app_data(tauri_app.clone())
             .wrap(middleware::Logger::default())
             .service(example::handle)
+            .service(mpv::handle_pause_api)
+            .service(mpv::handle_volume_up_api)
+            .service(mpv::handle_volume_down_api)
     })
-    .bind(("127.0.0.1", 6969))?
+    .bind(("0.0.0.0", 6969))?
     .run()
     .await
 }

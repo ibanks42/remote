@@ -1,7 +1,7 @@
 import '~/global.css';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Theme, ThemeProvider } from '@react-navigation/native';
+import { type Theme, ThemeProvider } from '@react-navigation/native';
 import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
@@ -10,6 +10,12 @@ import { NAV_THEME } from '~/lib/constants';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { PortalHost } from '@rn-primitives/portal';
 import { ThemeToggle } from '~/components/ThemeToggle';
+import { Pressable } from 'react-native';
+import { View } from 'react-native';
+import { cn } from '~/lib/utils';
+import { MenuSquare } from '~/lib/icons';
+import { Menu } from '~/lib/icons/Menu';
+import { MenuToggle } from '~/components/MenuToggle';
 
 const LIGHT_THEME: Theme = {
   dark: false,
@@ -69,6 +75,7 @@ export default function RootLayout() {
           name='index'
           options={{
             title: 'Starter Base',
+            headerLeft: () => <MenuToggle />,
             headerRight: () => <ThemeToggle />,
           }}
         />

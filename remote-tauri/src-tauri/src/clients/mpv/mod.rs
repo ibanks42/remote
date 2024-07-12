@@ -3,6 +3,7 @@ use std::ops::{Add, Sub};
 mod pipe;
 
 pub async fn toggle_pause() {
+    println!("toggling pause");
     let client = pipe::get_client();
 
     if client.is_err() {
