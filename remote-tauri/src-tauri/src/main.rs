@@ -1,11 +1,10 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod api;
 mod clients;
-mod handlers;
 mod settings;
 
-use handlers::mpv;
 use std::thread;
 use tauri::{
     AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
@@ -22,14 +21,14 @@ fn main() {
             let boxed_handle = Box::new(handle);
 
             thread::spawn(move || {
-                handlers::init(*boxed_handle).unwrap();
+                api::init(*boxed_handle).unwrap();
             });
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            mpv::handle_pause_cmd,
-            mpv::handle_volume_down_cmd,
-            mpv::handle_volume_up_cmd,
+            api::mpv::handle_pause_cmd,
+            api::mpv::handle_volume_down_cmd,
+            api::mpv::handle_volume_up_cmd,
             settings::save_settings,
             settings::load_settings
         ])

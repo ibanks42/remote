@@ -1,5 +1,7 @@
 use std::ops::{Add, Sub};
 
+use serde::{Deserialize, Serialize};
+
 mod pipe;
 
 pub async fn toggle_pause() {
@@ -60,4 +62,66 @@ pub async fn volume_down() {
     let volume = volume.unwrap().sub(2.0f64);
 
     pipe::set_property(&mut client, "volume", volume.to_string().as_str()).await;
+}
+
+pub async fn get_status() -> Result<Status, Box<dyn std::error::Error>> {
+    let client = pipe::get_client();
+
+    if client.is_err() {
+        return Err(format!("Error getting client: {:?}", client.err().unwrap()).into());
+    }
+
+    let mut client = client.unwrap();
+
+    let paused = pipe::get_property(&mut client, "pause")
+        .await
+        .as_bool()
+        .unwrap_or(true);
+
+    let volume = pipe::get_property(&mut client, "volume")
+        .await
+        .as_f64()
+        .unwrap_or(0.0);
+
+    let position = pipe::get_property(&mut client, "time-pos")
+        .await
+        .as_f64()
+        .unwrap_or(0.0);
+
+    let length = pipe::get_property(&mut client, "duration")
+        .await
+        .as_f64()
+        .unwrap_or(0.0);
+
+    let title = pipe::get_property(&mut client, "media-title")
+        .await
+        .to_string();
+
+    let file = pipe::get_property(&mut client, "filename")
+        .await
+        .to_string();
+
+    println!(
+        "paused: {}, volume: {}, position: {}, length: {}, title: {}, file: {}",
+        paused, volume, position, length, title, file
+    );
+
+    Ok(Status {
+        paused,
+        volume,
+        position,
+        length,
+        title,
+        file,
+    })
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Status {
+    pub paused: bool,
+    pub volume: f64,
+    pub position: f64,
+    pub length: f64,
+    pub title: String,
+    pub file: String,
 }

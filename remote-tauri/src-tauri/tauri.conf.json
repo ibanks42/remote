@@ -20,9 +20,9 @@
 		"windows": [
 			{
 				"title": "Home Remote",
-				"width": 400,
-				"height": 500,
-				"visible": true,
+				"width": 320,
+				"height": 600,
+				"visible": false,
 				"focus": false
 			}
 		],

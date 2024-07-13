@@ -1,4 +1,3 @@
-pub mod example;
 pub mod mpv;
 
 use std::sync::Mutex;
@@ -26,10 +25,10 @@ pub async fn init(app: AppHandle) -> std::io::Result<()> {
         App::new()
             .app_data(tauri_app.clone())
             .wrap(middleware::Logger::default())
-            .service(example::handle)
             .service(mpv::handle_pause_api)
             .service(mpv::handle_volume_up_api)
             .service(mpv::handle_volume_down_api)
+            .service(mpv::handle_status_api)
     })
     .bind(("0.0.0.0", settings.port))?
     .run()

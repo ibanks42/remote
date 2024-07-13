@@ -36,3 +36,8 @@ pub async fn handle_volume_down_api() -> impl Responder {
     clients::mpv::volume_down().await;
     HttpResponse::Ok()
 }
+
+#[get("/api/mpv/status")]
+pub async fn handle_status_api() -> impl Responder {
+    HttpResponse::Ok().json(clients::mpv::get_status().await.unwrap())
+}
