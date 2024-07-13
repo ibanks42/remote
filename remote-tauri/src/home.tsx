@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/tauri';
 import { Button } from './components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
 
 export default function HomePage() {
 	async function pauseMpv() {
@@ -16,18 +17,25 @@ export default function HomePage() {
 	}
 
 	return (
-		<div className='flex flex-col mx-auto text-center'>
-			<Button type='button' onClick={pauseMpv}>
-				Pause/Unpause MPV
-			</Button>
+		<div className='flex flex-col gap-2 mx-auto text-center'>
+			<Card>
+				<CardHeader>
+					<CardTitle>MPV Remote</CardTitle>
+				</CardHeader>
+				<CardContent className='flex flex-col gap-2'>
+					<Button type='button' onClick={pauseMpv}>
+						Pause/Unpause MPV
+					</Button>
 
-			<Button type='button' onClick={volumeUp}>
-				Volume Up
-			</Button>
+					<Button type='button' onClick={volumeUp}>
+						Volume Up
+					</Button>
 
-			<Button type='button' onClick={volumeDown}>
-				Volume Down
-			</Button>
+					<Button type='button' onClick={volumeDown}>
+						Volume Down
+					</Button>
+				</CardContent>
+			</Card>
 		</div>
 	);
 }

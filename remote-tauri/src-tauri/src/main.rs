@@ -31,6 +31,7 @@ fn main() {
             mpv::handle_volume_down_cmd,
             mpv::handle_volume_up_cmd,
             settings::save_settings,
+            settings::load_settings
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -1,4 +1,4 @@
-use std::io::Read;
+use std::io::{Read, Write};
 
 use serde::{Deserialize, Serialize};
 
@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 #[allow(dead_code)]
 pub struct Settings {
     pub mpv: MpvSettings,
+    pub port: u16,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -16,23 +17,17 @@ pub struct MpvSettings {
 
 #[tauri::command]
 pub fn save_settings(settings: &str) {
+    println!("Saving settings {}", settings);
     let settings = serde_json::from_str::<Settings>(settings);
     if settings.is_err() {
         panic!("Error parsing settings");
     }
     let settings = settings.unwrap();
 
-    let writer = std::fs::File::create("settings.json").unwrap();
-
-    let write = serde_json::to_writer(writer, &settings);
-
-    if write.is_err() {
-        panic!("Error writing settings")
-    }
-
-    write.unwrap()
+    write_settings(&settings);
 }
 
+#[tauri::command]
 pub fn load_settings() -> Settings {
     let settings_file = std::fs::File::open("settings.json");
 
@@ -50,10 +45,30 @@ pub fn load_settings() -> Settings {
     let deserialized = serde_json::from_slice::<Settings>(&buf);
 
     if deserialized.is_err() {
-        return get_default_settings();
+        println!("Error parsing settings");
+        let settings = get_default_settings();
+        write_settings(&settings);
+        return settings;
     }
 
     deserialized.unwrap()
+}
+
+fn write_settings(settings: &Settings) {
+    println!("Writing settings");
+    let mut writer = std::fs::File::create("settings.json").unwrap();
+
+    println!("Writing settings");
+    let pretty = serde_json::to_string_pretty(&settings);
+    if pretty.is_err() {
+        panic!("Error writing settings")
+    }
+
+    let write = writer.write(pretty.unwrap().as_bytes());
+
+    if write.is_err() {
+        panic!("Error writing settings")
+    }
 }
 
 fn get_default_settings() -> Settings {
@@ -61,5 +76,6 @@ fn get_default_settings() -> Settings {
         mpv: MpvSettings {
             pipe: r"\\.\pipe\mpvpipe".to_string(),
         },
+        port: 7920,
     }
 }
