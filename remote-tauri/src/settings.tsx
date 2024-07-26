@@ -9,13 +9,12 @@ import {
 	FormLabel,
 } from './components/ui/form';
 import { Input } from './components/ui/input';
-import { invoke } from '@tauri-apps/api/tauri';
+import { invoke } from '@tauri-apps/api/core';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './components/ui/tooltip';
-import { TooltipArrow } from '@radix-ui/react-tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from './components/ui/tooltip';
 import { Info } from 'lucide-react';
 
 const schema = z.object({

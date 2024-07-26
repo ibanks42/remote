@@ -1,49 +1,43 @@
 {
 	"build": {
-		"beforeDevCommand": "bun run dev",
+		"beforeDevCommand": "bun run frontend",
 		"beforeBuildCommand": "bun run build",
-		"devPath": "http://localhost:1420",
-		"distDir": "../dist"
+		"frontendDist": "../dist",
+		"devUrl": "http://localhost:1420"
 	},
-	"package": {
-		"productName": "home-remote",
-		"version": "0.0.0"
+	"bundle": {
+		"active": true,
+		"targets": "all",
+		"icon": [
+			"icons/32x32.png",
+			"icons/128x128.png",
+			"icons/128x128@2x.png",
+			"icons/icon.icns",
+			"icons/icon.ico"
+		],
+		"createUpdaterArtifacts": "v1Compatible"
 	},
-	"tauri": {
-		"allowlist": {
-			"all": false,
-			"shell": {
-				"all": false,
-				"open": true
-			}
+	"productName": "home-remote",
+	"version": "1.0.0",
+	"identifier": "dev.ibanks.remote",
+	"plugins": {},
+	"app": {
+		"trayIcon": {
+			"iconPath": "icons/128x128.png",
+			"iconAsTemplate": true
 		},
 		"windows": [
 			{
 				"title": "Home Remote",
 				"width": 320,
 				"height": 600,
-				"visible": false,
+				"visible": true,
 				"focus": false
 			}
 		],
-		"systemTray": {
-			"iconPath": "icons/128x128.png",
-			"iconAsTemplate": true
-		},
 		"security": {
 			"csp": null
-		},
-		"bundle": {
-			"active": true,
-			"targets": "all",
-			"identifier": "dev.ibanks.remote",
-			"icon": [
-				"icons/32x32.png",
-				"icons/128x128.png",
-				"icons/128x128@2x.png",
-				"icons/icon.icns",
-				"icons/icon.ico"
-			]
 		}
 	}
 }
+

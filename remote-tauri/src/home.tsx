@@ -1,10 +1,12 @@
-import { invoke } from '@tauri-apps/api/tauri';
+import { invoke } from '@tauri-apps/api/core';
 import { Button } from './components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
 
 export default function HomePage() {
 	async function pauseMpv() {
+		console.log('pause');
 		await invoke('handle_pause_cmd');
+		console.log('function returned');
 	}
 	async function volumeUp() {
 		await invoke('handle_volume_up_cmd');

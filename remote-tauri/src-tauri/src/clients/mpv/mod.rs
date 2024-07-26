@@ -6,7 +6,11 @@ mod pipe;
 
 pub async fn toggle_pause() {
     println!("toggling pause");
+    #[cfg(windows)]
     let client = pipe::get_client();
+
+    #[cfg(unix)]
+    let client = pipe::get_client().await;
 
     if client.is_err() {
         println!("Error getting client: {:?}", client.err().unwrap());
@@ -26,7 +30,10 @@ pub async fn toggle_pause() {
 }
 
 pub async fn volume_up() {
+    #[cfg(windows)]
     let client = pipe::get_client();
+    #[cfg(unix)]
+    let client = pipe::get_client().await;
 
     if client.is_err() {
         println!("Error getting client: {:?}", client.err().unwrap());
@@ -46,7 +53,10 @@ pub async fn volume_up() {
 }
 
 pub async fn volume_down() {
+    #[cfg(windows)]
     let client = pipe::get_client();
+    #[cfg(unix)]
+    let client = pipe::get_client().await;
 
     if client.is_err() {
         println!("Error getting client: {:?}", client.err().unwrap());
@@ -65,7 +75,10 @@ pub async fn volume_down() {
 }
 
 pub async fn get_status() -> Result<Status, Box<dyn std::error::Error>> {
+    #[cfg(windows)]
     let client = pipe::get_client();
+    #[cfg(unix)]
+    let client = pipe::get_client().await;
 
     if client.is_err() {
         return Err(format!("Error getting client: {:?}", client.err().unwrap()).into());
