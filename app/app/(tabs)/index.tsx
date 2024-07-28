@@ -20,28 +20,33 @@ const schema = z.object({
 
 export default function Screen() {
 	const focused = useIsFocused();
+	const [status, setStatus] = React.useState<z.infer<typeof schema> | undefined>(undefined);
 
-	const [status, setStatus] = React.useState<z.infer<typeof schema> | null>(null);
 	async function callApi(api: 'pause' | 'volume-up' | 'volume-down') {
 		try {
 			await fetch(`http://${storage.getString('address')}:${storage.getNumber('port')}/mpv/${api}`);
-			statusQuery.refetch();
+			refetch();
 		} catch (e) {
 			console.log(e);
 		}
 	}
 
-	const statusQuery = useQuery({
+	const { refetch } = useQuery({
 		queryKey: ['mpv-status'],
 		queryFn: async () => {
 			try {
-				const response = await fetch(
-					`http://${storage.getString('address')}:${storage.getNumber('port')}/mpv/status`,
-				);
+				const address = storage.getString('address');
+				const port = storage.getNumber('port');
+				const response = await fetch(`http://${address}:${port}/mpv/status`);
+
 				const parsed = schema.safeParse(await response.json());
+
+				if (parsed.data) setStatus(parsed.data);
+
 				return parsed.data;
 			} catch (e) {
-				console.log('mpv status', e);
+				console.log('[MPV Status]', e);
+				setStatus(undefined);
 				return null;
 			}
 		},
@@ -50,12 +55,6 @@ export default function Screen() {
 		refetchOnWindowFocus: true,
 		enabled: focused,
 	});
-
-	React.useEffect(() => {
-		if (statusQuery.data) {
-			setStatus(statusQuery.data);
-		}
-	}, [statusQuery.data]);
 
 	function toReadableTime(time: number | undefined) {
 		if (time === undefined) {
