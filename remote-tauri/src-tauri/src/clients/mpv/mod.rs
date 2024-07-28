@@ -129,7 +129,7 @@ pub async fn get_status() -> Result<Status, Box<dyn std::error::Error>> {
     })
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Status {
     pub paused: bool,
     pub volume: f64,

@@ -1,43 +1,50 @@
-use actix_web::{get, HttpResponse, Responder};
+use salvo::{handler, writing::Text, Depot, Request, Response};
 
 use crate::clients;
 
 #[tauri::command]
 pub async fn handle_pause_cmd() {
+    tracing::debug!("[Tauri] Toggling pause");
     clients::mpv::toggle_pause().await;
 }
 
-#[get("/api/mpv/pause")]
-pub async fn handle_pause_api() -> impl Responder {
-    println!("toggling pause api called");
+#[handler]
+pub async fn handle_pause_api(_req: &mut Request, res: &mut Response, _depot: &mut Depot) {
+    tracing::debug!("[API: MPV] Toggling pause");
     clients::mpv::toggle_pause().await;
-    HttpResponse::Ok()
+    res.render(Text::Plain("ok"))
 }
 
 #[tauri::command]
 pub async fn handle_volume_up_cmd() {
-    println!("Volume up");
+    tracing::debug!("[Tauri] Volume up");
     clients::mpv::volume_up().await;
 }
 
-#[get("/api/mpv/volume-up")]
-pub async fn handle_volume_up_api() -> impl Responder {
+#[handler]
+pub async fn handle_volume_up_api(_req: &mut Request, res: &mut Response, _depot: &mut Depot) {
+    tracing::debug!("[API: MPV] Volume up");
     clients::mpv::volume_up().await;
-    HttpResponse::Ok()
+    res.render(Text::Plain("ok"))
 }
 
 #[tauri::command]
 pub async fn handle_volume_down_cmd() {
+    tracing::debug!("[Tauri] Volume down");
     clients::mpv::volume_down().await;
 }
 
-#[get("/api/mpv/volume-down")]
-pub async fn handle_volume_down_api() -> impl Responder {
+#[handler]
+pub async fn handle_volume_down_api(_req: &mut Request, res: &mut Response, _depot: &mut Depot) {
+    tracing::debug!("[API: MPV] Volume down");
     clients::mpv::volume_down().await;
-    HttpResponse::Ok()
+    res.render(Text::Plain("ok"))
 }
 
-#[get("/api/mpv/status")]
-pub async fn handle_status_api() -> impl Responder {
-    HttpResponse::Ok().json(clients::mpv::get_status().await.unwrap())
+#[handler]
+pub async fn handle_status_api(_req: &mut Request, res: &mut Response, _depot: &mut Depot) {
+    tracing::debug!("[API: MPV] Get MPV status");
+    let status = clients::mpv::get_status().await.unwrap();
+    let response = serde_json::to_string(&status).expect("Failed to serialize status");
+    res.render(Text::Json(response))
 }

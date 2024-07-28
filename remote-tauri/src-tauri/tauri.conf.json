@@ -14,8 +14,7 @@
 			"icons/128x128@2x.png",
 			"icons/icon.icns",
 			"icons/icon.ico"
-		],
-		"createUpdaterArtifacts": "v1Compatible"
+		]
 	},
 	"productName": "home-remote",
 	"version": "1.0.0",
@@ -31,7 +30,7 @@
 				"title": "Home Remote",
 				"width": 320,
 				"height": 600,
-				"visible": true,
+				"visible": false,
 				"focus": false
 			}
 		],
@@ -40,4 +39,3 @@
 		}
 	}
 }
-

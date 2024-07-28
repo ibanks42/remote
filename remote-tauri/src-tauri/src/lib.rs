@@ -2,14 +2,29 @@ mod api;
 mod clients;
 mod settings;
 
+use lazy_static::lazy_static;
 use tauri::{
-    menu::{MenuBuilder, MenuItem, MenuItemBuilder, SubmenuBuilder},
+    menu::{MenuBuilder, MenuItemBuilder},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     Manager,
 };
+use tokio::runtime::Runtime;
+
+lazy_static! {
+    static ref RUNTIME: Runtime = Runtime::new().unwrap();
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    std::env::set_var("RUST_LOG", "debug");
+    std::env::set_var("RUST_BACKTRACE", "1");
+    tracing_subscriber::fmt::init();
+
+    RUNTIME.spawn(async {
+        api::init().await;
+        tracing::debug!("Server stopped");
+    });
+
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .setup(|app| {

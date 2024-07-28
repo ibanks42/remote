@@ -1,6 +1,6 @@
 {
   "mpv": {
-    "pipe": "\\\\.\\pipe\\mpvpipe"
+    "pipe": "/tmp/mpvsocket"
   },
-  "port": 6969
+  "port": 42069
 }

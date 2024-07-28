@@ -39,6 +39,8 @@ export default function SettingsPage() {
 			const parsed = schema.safeParse(settings);
 			if (parsed.success && parsed.data) {
 				form.reset(parsed.data);
+			} else {
+				console.error(parsed.error);
 			}
 		});
 	}, []);
