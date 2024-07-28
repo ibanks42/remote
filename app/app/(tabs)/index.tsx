@@ -18,7 +18,7 @@ const schema = z.object({
 	file: z.string(),
 });
 
-export default function Screen() {
+export default function HomePage() {
 	const focused = useIsFocused();
 	const [status, setStatus] = React.useState<z.infer<typeof schema> | undefined>(undefined);
 
