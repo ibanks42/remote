@@ -24,6 +24,7 @@ pub async fn init() {
         .push(Router::with_path("mpv/status").get(mpv::handle_status_api))
         .push(Router::with_path("mpv/volume-up").get(mpv::handle_volume_up_api))
         .push(Router::with_path("mpv/volume-down").get(mpv::handle_volume_down_api))
+        .push(Router::with_path("mpv/subtitle").get(mpv::handle_set_subtitle))
         .push(Router::with_path("mpv/pause").get(mpv::handle_pause_api));
 
     server.serve(router).await;

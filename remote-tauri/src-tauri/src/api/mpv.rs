@@ -15,6 +15,15 @@ pub async fn handle_pause_api(_req: &mut Request, res: &mut Response, _depot: &m
     res.render(Text::Plain("ok"))
 }
 
+#[handler]
+pub async fn handle_set_subtitle(req: &mut Request, res: &mut Response, _depot: &mut Depot) {
+    let id = req.query::<i64>("id").expect("No subtitle ID provided");
+    tracing::debug!("[API: MPV] Setting subtitle to {}", id);
+
+    clients::mpv::set_subtitle(id).await;
+    res.render(Text::Plain("ok"))
+}
+
 #[tauri::command]
 pub async fn handle_volume_up_cmd() {
     tracing::debug!("[Tauri] Volume up");

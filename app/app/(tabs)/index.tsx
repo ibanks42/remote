@@ -1,12 +1,20 @@
+import { useIsFocused } from '@react-navigation/native';
+import { useQuery } from '@tanstack/react-query';
 import * as React from 'react';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
+import { z } from 'zod';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '~/components/ui/card';
-import { Pause, Play, VolumeMinus, VolumePlus } from '~/lib/icons';
+import {
+	type Option,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '~/components/ui/select';
 import { Text } from '~/components/ui/text';
-import { useQuery } from '@tanstack/react-query';
-import { z } from 'zod';
-import { useIsFocused } from '@react-navigation/native';
+import { Pause, Play, VolumeMinus, VolumePlus } from '~/lib/icons';
 import { storage } from '~/lib/storage';
 
 const schema = z.object({
@@ -16,15 +24,31 @@ const schema = z.object({
 	position: z.number(),
 	title: z.string(),
 	file: z.string(),
+	subtitle: z.string(),
+	subtitles: z.array(z.object({ id: z.number(), title: z.string() })),
 });
 
 export default function HomePage() {
 	const focused = useIsFocused();
+	const [subtitle, setSubtitle] = React.useState<Option | undefined>(undefined);
 	const [status, setStatus] = React.useState<z.infer<typeof schema> | undefined>(undefined);
 
-	async function callApi(api: 'pause' | 'volume-up' | 'volume-down') {
+	async function callApi(
+		api: 'pause' | 'volume-up' | 'volume-down' | 'subtitle',
+		params?: { id: string; value: string }[],
+	) {
 		try {
-			await fetch(`http://${storage.getString('address')}:${storage.getNumber('port')}/mpv/${api}`);
+			const url = new URL(
+				`http://${storage.getString('address')}:${storage.getNumber('port')}/mpv/${api}`,
+			);
+			if (params) {
+				for (const param of params) {
+					url.searchParams.append(param.id, param.value);
+				}
+			}
+			console.log(url);
+
+			await fetch(url);
 			refetch();
 		} catch (e) {
 			console.log(e);
@@ -47,7 +71,7 @@ export default function HomePage() {
 			} catch (e) {
 				console.log('[MPV Status]', e);
 				setStatus(undefined);
-				return null;
+				return {};
 			}
 		},
 		refetchInterval: 1000,
@@ -55,6 +79,13 @@ export default function HomePage() {
 		refetchOnWindowFocus: true,
 		enabled: focused,
 	});
+
+	React.useEffect(() => {
+		if (status?.subtitle) {
+			const value = status?.subtitles?.find((s) => s.id.toString() === status?.subtitle);
+			setSubtitle({ label: value?.title || 'None', value: status?.subtitle });
+		}
+	}, [status?.subtitle]);
 
 	function toReadableTime(time: number | undefined) {
 		if (time === undefined) {
@@ -77,6 +108,15 @@ export default function HomePage() {
 		return result;
 	}
 
+	const subtitleOptions = React.useMemo(() => {
+		return status?.subtitles.map((subtitle) => {
+			return {
+				label: subtitle.title,
+				value: subtitle.id.toString(),
+			};
+		});
+	}, [status?.subtitles]);
+
 	if (!focused) return <></>;
 
 	return (
@@ -86,8 +126,8 @@ export default function HomePage() {
 					<CardTitle className='pb-2 text-center'>MPV Controls</CardTitle>
 				</CardHeader>
 
-				<CardContent>
-					<View className='flex-row justify-around gap-3'>
+				<CardContent className='flex-col gap-6'>
+					<View className='flex flex-row justify-between'>
 						<View className='items-center'>
 							<Button
 								variant='outline'
@@ -121,6 +161,32 @@ export default function HomePage() {
 								<VolumePlus className='text-foreground' size={20} />
 							</Button>
 						</View>
+					</View>
+
+					<View>
+						<Text className='text-muted-foreground'>Subtitles</Text>
+						<Select
+							value={subtitle}
+							onValueChange={(option) =>
+								option && callApi('subtitle', [{ id: 'id', value: option.value }])
+							}
+						>
+							<SelectTrigger>
+								<SelectValue placeholder='None' className='text-foreground' />
+							</SelectTrigger>
+							<SelectContent>
+								<ScrollView>
+									<SelectItem label='None' value='0' />
+									{subtitleOptions?.map((subtitle) => (
+										<SelectItem
+											key={subtitle.value}
+											label={subtitle.label}
+											value={subtitle.value}
+										/>
+									))}
+								</ScrollView>
+							</SelectContent>
+						</Select>
 					</View>
 				</CardContent>
 
