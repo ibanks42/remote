@@ -5,8 +5,9 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug)]
 #[allow(dead_code)]
 pub struct Settings {
-    pub mpv: MpvSettings,
     pub port: u16,
+    pub mpv: Option<MpvSettings>,
+    pub autohide: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -101,14 +102,15 @@ fn write_settings(settings: &Settings) {
 
 fn get_default_settings() -> Settings {
     Settings {
+        port: 7920,
         #[cfg(windows)]
         mpv: MpvSettings {
             pipe: r"\\.\pipe\mpvpipe".to_string(),
         },
         #[cfg(unix)]
-        mpv: MpvSettings {
+        mpv: Some(MpvSettings {
             pipe: r"/tmp/mpvsocket".to_string(),
-        },
-        port: 7920,
+        }),
+        autohide: Some(false),
     }
 }

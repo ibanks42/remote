@@ -1,7 +1,7 @@
 {
 	"build": {
 		"beforeDevCommand": "bun run frontend",
-		"beforeBuildCommand": "bun run build",
+		"beforeBuildCommand": "bun run build-web",
 		"frontendDist": "../dist",
 		"devUrl": "http://localhost:1420"
 	},
@@ -17,7 +17,7 @@
 		]
 	},
 	"productName": "home-remote",
-	"version": "1.0.0",
+	"version": "0.0.1",
 	"identifier": "dev.ibanks.remote",
 	"plugins": {},
 	"app": {
@@ -25,15 +25,6 @@
 			"iconPath": "icons/128x128.png",
 			"iconAsTemplate": true
 		},
-		"windows": [
-			{
-				"title": "Home Remote",
-				"width": 320,
-				"height": 600,
-				"visible": false,
-				"focus": false
-			}
-		],
 		"security": {
 			"csp": null
 		}

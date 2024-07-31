@@ -3,6 +3,7 @@ mod clients;
 mod settings;
 
 use lazy_static::lazy_static;
+use settings::load_settings;
 use tauri::{
     menu::{MenuBuilder, MenuItemBuilder},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
@@ -27,10 +28,16 @@ pub fn run() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_autostart::init(
+            tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+            None,
+        ))
         .setup(|app| {
+            let settings = load_settings();
             let quit = MenuItemBuilder::with_id("quit", "Quit").build(app)?;
             let show = MenuItemBuilder::with_id("show", "Show").build(app)?;
             let hide = MenuItemBuilder::with_id("hide", "Hide").build(app)?;
+            let autohide = settings.autohide.unwrap_or(false);
 
             let menu = MenuBuilder::new(app)
                 .items(&[&show, &hide])
@@ -69,6 +76,17 @@ pub fn run() {
                     }
                 })
                 .build(app)?;
+
+            let _window = tauri::WebviewWindowBuilder::new(
+                app,
+                "main".to_string(),
+                tauri::WebviewUrl::App("index.html".into()),
+            )
+            .resizable(true)
+            .title("Home Remote")
+            .inner_size(320.0, 600.0)
+            .visible(autohide)
+            .build()?;
 
             Ok(())
         })

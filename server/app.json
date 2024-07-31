@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "9c98be0d-8309-407b-b44b-c34590583331"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.binkycs.remotetauri"
+    }
+  }
+}

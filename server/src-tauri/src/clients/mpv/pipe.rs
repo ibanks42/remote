@@ -10,7 +10,8 @@ use tokio::net::UnixStream;
 
 #[cfg(windows)]
 pub fn get_client() -> Result<NamedPipeClient, std::io::Error> {
-    ClientOptions::new().open(load_settings().mpv.pipe.as_str())
+    let mpv = load_settings().mpv.expect("No mpv in settings");
+    ClientOptions::new().open(mpv.pipe.as_str())
 }
 
 #[cfg(windows)]
@@ -72,7 +73,8 @@ pub async fn send_msg(client: &mut UnixStream, msg: Value) {
 
 #[cfg(unix)]
 pub async fn get_client() -> Result<UnixStream, std::io::Error> {
-    UnixStream::connect(load_settings().mpv.pipe.as_str()).await
+    let mpv = load_settings().mpv.expect("No mpv in settings");
+    UnixStream::connect(mpv.pipe.as_str()).await
 }
 
 #[cfg(unix)]
