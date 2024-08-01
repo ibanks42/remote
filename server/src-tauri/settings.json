@@ -1,6 +1,0 @@
-{
-  "mpv": {
-    "pipe": "/tmp/mpvsocket"
-  },
-  "port": 42069
-}

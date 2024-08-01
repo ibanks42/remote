@@ -5,6 +5,7 @@ mod settings;
 use lazy_static::lazy_static;
 use settings::load_settings;
 use tauri::{
+    image::Image,
     menu::{MenuBuilder, MenuItemBuilder},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     Manager,
@@ -77,7 +78,9 @@ pub fn run() {
                 })
                 .build(app)?;
 
-            let _window = tauri::WebviewWindowBuilder::new(
+            let icon = Image::from_path("icons/128x128@2x.png").unwrap();
+
+            let window = tauri::WebviewWindowBuilder::new(
                 app,
                 "main".to_string(),
                 tauri::WebviewUrl::App("index.html".into()),
@@ -85,8 +88,16 @@ pub fn run() {
             .resizable(true)
             .title("Home Remote")
             .inner_size(320.0, 600.0)
+            .maximizable(false)
+            .icon(icon)?
             .visible(autohide)
             .build()?;
+            window.clone().on_window_event(move |event| {
+                if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                    let _ = api.prevent_close();
+                    let _ = window.hide();
+                }
+            });
 
             Ok(())
         })
