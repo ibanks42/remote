@@ -45,7 +45,7 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-        
+          
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -59,8 +59,14 @@ jobs:
 
       - name: install frontend dependencies
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
-        run: bun install # change this to npm or pnpm depending on which one you use.
-
+        run: bun install --frozen-lockfile # change this to npm or pnpm depending on which one you use.
+          
+      - name: Install tauri-cli v2 from crates.io
+        uses: baptiste0928/cargo-install@v3
+        with:
+          crate: tauri-cli
+          version: '2.0.0-rc.0' # Install tauri v2 cli
+          
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -70,4 +76,5 @@ jobs:
           releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
+          tauriScript: cargo tauri
           args: ${{ matrix.args }}
