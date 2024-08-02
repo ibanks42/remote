@@ -104,9 +104,9 @@ fn get_default_settings() -> Settings {
     Settings {
         port: 7920,
         #[cfg(windows)]
-        mpv: MpvSettings {
+        mpv: Some(MpvSettings {
             pipe: r"\\.\pipe\mpvpipe".to_string(),
-        },
+        }),
         #[cfg(unix)]
         mpv: Some(MpvSettings {
             pipe: r"/tmp/mpvsocket".to_string(),
