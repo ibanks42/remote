@@ -50,6 +50,8 @@ export { Search } from './Search';
 export { Sparkles } from './Sparkles';
 export { Sun } from './Sun';
 export { SquarePlay } from './SquarePlay';
+export { StepBackward } from './StepBackward';
+export { StepForward } from './StepForward';
 export { Table } from './Table';
 export { Terminal } from './Terminal';
 export { Underline } from './Underline';

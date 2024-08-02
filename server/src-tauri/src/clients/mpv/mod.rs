@@ -46,6 +46,68 @@ pub async fn set_subtitle(id: i64) {
     pipe::set_property(&mut client, "sid", id.to_string().as_str()).await;
 }
 
+pub async fn set_volume(volume: i16) {
+    #[cfg(windows)]
+    let client = pipe::get_client();
+    #[cfg(unix)]
+    let client = pipe::get_client().await;
+
+    if client.is_err() {
+        println!("Error getting client: {:?}", client.err().unwrap());
+        return;
+    }
+
+    let mut client = client.unwrap();
+
+    pipe::set_property(&mut client, "volume", volume.to_string().as_str()).await;
+}
+
+pub async fn skip_backward() {
+    #[cfg(windows)]
+    let client = pipe::get_client();
+    #[cfg(unix)]
+    let client = pipe::get_client().await;
+
+    if client.is_err() {
+        println!("Error getting client: {:?}", client.err().unwrap());
+        return;
+    }
+
+    let mut client = client.unwrap();
+
+    let position = pipe::get_property(&mut client, "time-pos").await.as_f64();
+    if position.is_none() {
+        println!("Error getting position");
+        return;
+    }
+    let position = position.unwrap().sub(10.0f64);
+
+    pipe::set_property(&mut client, "time-pos", position.to_string().as_str()).await;
+}
+
+pub async fn skip_forward() {
+    #[cfg(windows)]
+    let client = pipe::get_client();
+    #[cfg(unix)]
+    let client = pipe::get_client().await;
+
+    if client.is_err() {
+        println!("Error getting client: {:?}", client.err().unwrap());
+        return;
+    }
+
+    let mut client = client.unwrap();
+
+    let position = pipe::get_property(&mut client, "time-pos").await.as_f64();
+    if position.is_none() {
+        println!("Error getting position");
+        return;
+    }
+    let position = position.unwrap().add(10.0f64);
+
+    pipe::set_property(&mut client, "time-pos", position.to_string().as_str()).await;
+}
+
 pub async fn volume_up() {
     #[cfg(windows)]
     let client = pipe::get_client();

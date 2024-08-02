@@ -31,6 +31,29 @@ pub async fn handle_volume_up_cmd() {
 }
 
 #[handler]
+pub async fn handle_skip_backward_api(_req: &mut Request, res: &mut Response, _depot: &mut Depot) {
+    tracing::debug!("[API: MPV] Skip forward");
+    clients::mpv::skip_backward().await;
+    res.render(Text::Plain("ok"))
+}
+
+#[handler]
+pub async fn handle_skip_forward_api(_req: &mut Request, res: &mut Response, _depot: &mut Depot) {
+    tracing::debug!("[API: MPV] Skip forward");
+    clients::mpv::skip_forward().await;
+    res.render(Text::Plain("ok"))
+}
+
+#[handler]
+pub async fn handle_set_volume_api(req: &mut Request, res: &mut Response, _depot: &mut Depot) {
+    let volume = req.query::<i16>("volume").expect("No volume provided");
+    tracing::debug!("[API: MPV] Setting volume to {}", volume);
+
+    clients::mpv::set_volume(volume).await;
+    res.render(Text::Plain("ok"))
+}
+
+#[handler]
 pub async fn handle_volume_up_api(_req: &mut Request, res: &mut Response, _depot: &mut Depot) {
     tracing::debug!("[API: MPV] Volume up");
     clients::mpv::volume_up().await;

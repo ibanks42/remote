@@ -3,12 +3,12 @@ mod clients;
 mod settings;
 
 use lazy_static::lazy_static;
-use settings::load_settings;
+use settings::{load_settings, write_settings};
 use tauri::{
     image::Image,
     menu::{MenuBuilder, MenuItemBuilder},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-    Manager,
+    Manager, PhysicalPosition,
 };
 use tokio::runtime::Runtime;
 
@@ -35,10 +35,14 @@ pub fn run() {
         ))
         .setup(|app| {
             let settings = load_settings();
+            let autohide = settings.autohide.unwrap_or(false);
+            let window_size = settings.window_size.unwrap_or((320, 600));
+
+            let icon = Image::from_path("icons/128x128@2x.png").unwrap();
+
             let quit = MenuItemBuilder::with_id("quit", "Quit").build(app)?;
             let show = MenuItemBuilder::with_id("show", "Show").build(app)?;
             let hide = MenuItemBuilder::with_id("hide", "Hide").build(app)?;
-            let autohide = settings.autohide.unwrap_or(false);
 
             let menu = MenuBuilder::new(app)
                 .items(&[&show, &hide])
@@ -48,6 +52,7 @@ pub fn run() {
 
             let _tray = TrayIconBuilder::new()
                 .menu(&menu)
+                .icon(icon.clone())
                 .on_menu_event(move |app, event| match event.id().as_ref() {
                     "quit" => {
                         std::process::exit(0);
@@ -78,8 +83,6 @@ pub fn run() {
                 })
                 .build(app)?;
 
-            let icon = Image::from_path("icons/128x128@2x.png").unwrap();
-
             let window = tauri::WebviewWindowBuilder::new(
                 app,
                 "main".to_string(),
@@ -87,15 +90,25 @@ pub fn run() {
             )
             .resizable(true)
             .title("Home Remote")
-            .inner_size(320.0, 600.0)
+            .inner_size(window_size.0.into(), window_size.1.into())
             .maximizable(false)
-            .icon(icon)?
+            .icon(icon.clone())?
             .visible(autohide)
             .build()?;
             window.clone().on_window_event(move |event| {
                 if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                     let _ = api.prevent_close();
                     let _ = window.hide();
+
+                    let size = window.inner_size().unwrap_or(tauri::PhysicalSize {
+                        width: 320,
+                        height: 600,
+                    });
+
+                    let mut settings = load_settings();
+                    settings.window_size = Some((size.width, size.height));
+
+                    write_settings(&settings);
                 }
             });
 

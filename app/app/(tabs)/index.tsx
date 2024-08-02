@@ -14,8 +14,11 @@ import {
 	SelectValue,
 } from '~/components/ui/select';
 import { Text } from '~/components/ui/text';
-import { Pause, Play, VolumeMinus, VolumePlus } from '~/lib/icons';
+import { Pause, Play, VolumeMinus, VolumePlus, StepBackward, StepForward } from '~/lib/icons';
 import { storage } from '~/lib/storage';
+import { Slider } from '@miblanchard/react-native-slider';
+import { useColorScheme } from '~/lib/useColorScheme';
+import { NAV_THEME } from '~/lib/constants';
 
 const schema = z.object({
 	volume: z.number(),
@@ -32,9 +35,17 @@ export default function HomePage() {
 	const focused = useIsFocused();
 	const [subtitle, setSubtitle] = React.useState<Option | undefined>(undefined);
 	const [status, setStatus] = React.useState<z.infer<typeof schema> | undefined>(undefined);
+	const colorSchema = useColorScheme();
 
 	async function callApi(
-		api: 'pause' | 'volume-up' | 'volume-down' | 'subtitle',
+		api:
+			| 'pause'
+			| 'set-volume'
+			| 'skip-backward'
+			| 'skip-forward'
+			| 'volume-up'
+			| 'volume-down'
+			| 'subtitle',
 		params?: { id: string; value: string }[],
 	) {
 		try {
@@ -132,6 +143,16 @@ export default function HomePage() {
 							<Button
 								variant='outline'
 								className='shadow shadow-foreground/5'
+								onPress={() => callApi('skip-backward')}
+							>
+								<StepBackward className='text-foreground' size={20} />
+							</Button>
+						</View>
+
+						<View className='items-center'>
+							<Button
+								variant='outline'
+								className='shadow shadow-foreground/5'
 								onPress={() => callApi('pause')}
 							>
 								{status?.paused ? (
@@ -146,21 +167,48 @@ export default function HomePage() {
 							<Button
 								variant='outline'
 								className='shadow shadow-foreground/5'
-								onPress={() => callApi('volume-down')}
+								onPress={() => callApi('skip-forward')}
 							>
-								<VolumeMinus className='text-foreground' size={20} />
+								<StepForward className='text-foreground' size={20} />
 							</Button>
 						</View>
+					</View>
 
-						<View className='items-center'>
-							<Button
-								variant='outline'
-								className='shadow shadow-foreground/5'
-								onPress={() => callApi('volume-up')}
-							>
-								<VolumePlus className='text-foreground' size={20} />
-							</Button>
-						</View>
+					<View>
+						<Slider
+							value={status?.volume}
+							minimumValue={0}
+							maximumValue={150}
+							step={2}
+							onValueChange={(v) => {
+								if (v[0] === status?.volume) return;
+								callApi('set-volume', [{ id: 'volume', value: v[0].toString() }]);
+							}}
+							trackStyle={{
+								backgroundColor:
+									colorSchema.colorScheme === 'dark'
+										? NAV_THEME.dark.primary
+										: NAV_THEME.light.primary,
+							}}
+							minimumTrackStyle={{
+								backgroundColor:
+									colorSchema.colorScheme === 'dark'
+										? NAV_THEME.dark.primary
+										: NAV_THEME.light.primary,
+							}}
+							maximumTrackStyle={{
+								backgroundColor:
+									colorSchema.colorScheme === 'dark'
+										? NAV_THEME.dark.border
+										: NAV_THEME.light.border,
+							}}
+							thumbStyle={{
+								backgroundColor:
+									colorSchema.colorScheme === 'dark'
+										? NAV_THEME.dark.primary
+										: NAV_THEME.light.primary,
+							}}
+						/>
 					</View>
 
 					<View>

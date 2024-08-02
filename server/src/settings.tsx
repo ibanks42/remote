@@ -149,7 +149,7 @@ export default function SettingsPage() {
 									onCheckedChange={(val) => setAutostartEnabled(val as boolean)}
 								/>
 							</FormControl>
-							<FormLabel>Autostart</FormLabel>
+							<FormLabel>Run on Startup</FormLabel>
 						</div>
 						<FormField
 							control={form.control}

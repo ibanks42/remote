@@ -22,8 +22,11 @@ pub async fn init() {
         .push(Router::with_path("stop").get(stop))
         .push(Router::with_path("restart").get(restart))
         .push(Router::with_path("mpv/status").get(mpv::handle_status_api))
+        .push(Router::with_path("mpv/set-volume").get(mpv::handle_set_volume_api))
         .push(Router::with_path("mpv/volume-up").get(mpv::handle_volume_up_api))
         .push(Router::with_path("mpv/volume-down").get(mpv::handle_volume_down_api))
+        .push(Router::with_path("mpv/skip-backward").get(mpv::handle_skip_backward_api))
+        .push(Router::with_path("mpv/skip-forward").get(mpv::handle_skip_forward_api))
         .push(Router::with_path("mpv/subtitle").get(mpv::handle_set_subtitle))
         .push(Router::with_path("mpv/pause").get(mpv::handle_pause_api));
 

@@ -2,15 +2,16 @@ import '~/global.css';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { type Theme, ThemeProvider } from '@react-navigation/native';
+import { PortalHost } from '@rn-primitives/portal';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { Platform } from 'react-native';
+import { ThemeToggle } from '~/components/ThemeToggle';
 import { NAV_THEME } from '~/lib/constants';
 import { useColorScheme } from '~/lib/useColorScheme';
-import { PortalHost } from '@rn-primitives/portal';
-import { ThemeToggle } from '~/components/ThemeToggle';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const LIGHT_THEME: Theme = {
 	dark: false,
@@ -65,20 +66,22 @@ export default function RootLayout() {
 	const client = new QueryClient();
 
 	return (
-		<QueryClientProvider client={client}>
-			<ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-				<StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-				<Stack>
-					<Stack.Screen
-						name='(tabs)'
-						options={{
-							title: 'Starter Base',
-							headerRight: () => <ThemeToggle />,
-						}}
-					/>
-				</Stack>
-				<PortalHost />
-			</ThemeProvider>
-		</QueryClientProvider>
+		<GestureHandlerRootView style={{ flex: 1 }}>
+			<QueryClientProvider client={client}>
+				<ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+					<StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
+					<Stack>
+						<Stack.Screen
+							name='(tabs)'
+							options={{
+								title: 'Remote',
+								headerRight: () => <ThemeToggle />,
+							}}
+						/>
+					</Stack>
+					<PortalHost />
+				</ThemeProvider>
+			</QueryClientProvider>
+		</GestureHandlerRootView>
 	);
 }

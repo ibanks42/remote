@@ -8,6 +8,7 @@ pub struct Settings {
     pub port: u16,
     pub mpv: Option<MpvSettings>,
     pub autohide: Option<bool>,
+    pub window_size: Option<(u32, u32)>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -74,7 +75,7 @@ pub fn load_settings() -> Settings {
     deserialized.unwrap()
 }
 
-fn write_settings(settings: &Settings) {
+pub fn write_settings(settings: &Settings) {
     // create directory if it doesn't exist
     let path = get_settings_path();
     let dir = std::path::Path::new(&path).parent().unwrap();
@@ -82,7 +83,6 @@ fn write_settings(settings: &Settings) {
         std::fs::create_dir_all(dir).unwrap();
     }
 
-    println!("Writing settings");
     let mut writer = std::fs::File::create(path).unwrap();
 
     println!("Writing settings");
@@ -97,7 +97,7 @@ fn write_settings(settings: &Settings) {
         panic!("Error writing settings: {}", write.err().unwrap());
     }
 
-    println!("Settings written: {}", write.unwrap());
+    println!("Settings written: {} bytes", write.unwrap());
 }
 
 fn get_default_settings() -> Settings {
@@ -111,6 +111,7 @@ fn get_default_settings() -> Settings {
         mpv: Some(MpvSettings {
             pipe: r"/tmp/mpvsocket".to_string(),
         }),
-        autohide: Some(false),
+        autohide: Some(true),
+        window_size: Some((320, 600)),
     }
 }
