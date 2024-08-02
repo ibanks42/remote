@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 mod pipe;
 
 pub async fn toggle_pause() {
-    println!("toggling pause");
+    tracing::debug!("toggling pause");
     #[cfg(windows)]
     let client = pipe::get_client();
 
@@ -13,7 +13,7 @@ pub async fn toggle_pause() {
     let client = pipe::get_client().await;
 
     if client.is_err() {
-        println!("Error getting client: {:?}", client.err().unwrap());
+        tracing::debug!("Error getting client: {:?}", client.err().unwrap());
         return;
     }
 
@@ -24,7 +24,7 @@ pub async fn toggle_pause() {
         .as_bool()
         .unwrap();
 
-    println!("is_paused: {}", !is_paused);
+    tracing::debug!("is_paused: {}", !is_paused);
 
     pipe::set_bool_property(&mut client, "pause", !is_paused).await;
 }
@@ -37,7 +37,7 @@ pub async fn set_subtitle(id: i64) {
     let client = pipe::get_client().await;
 
     if client.is_err() {
-        println!("Error getting client: {:?}", client.err().unwrap());
+        tracing::debug!("Error getting client: {:?}", client.err().unwrap());
         return;
     }
 
@@ -53,7 +53,7 @@ pub async fn set_volume(volume: i16) {
     let client = pipe::get_client().await;
 
     if client.is_err() {
-        println!("Error getting client: {:?}", client.err().unwrap());
+        tracing::debug!("Error getting client: {:?}", client.err().unwrap());
         return;
     }
 
@@ -69,7 +69,7 @@ pub async fn skip_backward() {
     let client = pipe::get_client().await;
 
     if client.is_err() {
-        println!("Error getting client: {:?}", client.err().unwrap());
+        tracing::debug!("Error getting client: {:?}", client.err().unwrap());
         return;
     }
 
@@ -77,7 +77,7 @@ pub async fn skip_backward() {
 
     let position = pipe::get_property(&mut client, "time-pos").await.as_f64();
     if position.is_none() {
-        println!("Error getting position");
+        tracing::debug!("Error getting position");
         return;
     }
     let position = position.unwrap().sub(10.0f64);
@@ -92,7 +92,7 @@ pub async fn skip_forward() {
     let client = pipe::get_client().await;
 
     if client.is_err() {
-        println!("Error getting client: {:?}", client.err().unwrap());
+        tracing::debug!("Error getting client: {:?}", client.err().unwrap());
         return;
     }
 
@@ -100,7 +100,7 @@ pub async fn skip_forward() {
 
     let position = pipe::get_property(&mut client, "time-pos").await.as_f64();
     if position.is_none() {
-        println!("Error getting position");
+        tracing::debug!("Error getting position");
         return;
     }
     let position = position.unwrap().add(10.0f64);
@@ -115,7 +115,7 @@ pub async fn volume_up() {
     let client = pipe::get_client().await;
 
     if client.is_err() {
-        println!("Error getting client: {:?}", client.err().unwrap());
+        tracing::debug!("Error getting client: {:?}", client.err().unwrap());
         return;
     }
 
@@ -123,7 +123,7 @@ pub async fn volume_up() {
 
     let volume = pipe::get_property(&mut client, "volume").await.as_f64();
     if volume.is_none() {
-        println!("Error getting volume");
+        tracing::debug!("Error getting volume");
         return;
     }
     let volume = volume.unwrap().add(2.0f64);
@@ -138,14 +138,14 @@ pub async fn volume_down() {
     let client = pipe::get_client().await;
 
     if client.is_err() {
-        println!("Error getting client: {:?}", client.err().unwrap());
+        tracing::debug!("Error getting client: {:?}", client.err().unwrap());
         return;
     }
     let mut client = client.unwrap();
 
     let volume = pipe::get_property(&mut client, "volume").await.as_f64();
     if volume.is_none() {
-        println!("Error getting volume");
+        tracing::debug!("Error getting volume");
         return;
     }
     let volume = volume.unwrap().sub(2.0f64);

@@ -5,7 +5,6 @@ mod settings;
 use lazy_static::lazy_static;
 use settings::{load_settings, write_settings};
 use tauri::{
-    image::Image,
     menu::{MenuBuilder, MenuItemBuilder},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     Manager,
@@ -19,7 +18,7 @@ lazy_static! {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     std::env::set_var("RUST_LOG", "debug");
-    std::env::set_var("RUST_BACKTRACE", "1");
+    std::env::set_var("RUST_BACKTRACE", "full");
     tracing_subscriber::fmt::init();
 
     RUNTIME.spawn(async {
@@ -38,7 +37,7 @@ pub fn run() {
             let autohide = settings.autohide.unwrap_or(false);
             let window_size = settings.window_size.unwrap_or((320, 600));
 
-            let icon = Image::from_path("icons/128x128@2x.png").unwrap();
+            let icon = app.default_window_icon().unwrap();
 
             let quit = MenuItemBuilder::with_id("quit", "Quit").build(app)?;
             let show = MenuItemBuilder::with_id("show", "Show").build(app)?;

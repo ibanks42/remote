@@ -36,7 +36,7 @@ pub fn get_settings_path() -> String {
 
 #[tauri::command]
 pub fn save_settings(settings: &str) {
-    println!("Saving settings {}", settings);
+    tracing::debug!("Saving settings {}", settings);
     let settings = serde_json::from_str::<Settings>(settings);
     if settings.is_err() {
         panic!("Error parsing settings: {}", settings.err().unwrap());
@@ -45,7 +45,7 @@ pub fn save_settings(settings: &str) {
 
     write_settings(&settings);
 
-    println!("Settings saved");
+    tracing::debug!("Settings saved");
 }
 
 #[tauri::command]
@@ -66,7 +66,7 @@ pub fn load_settings() -> Settings {
     let deserialized = serde_json::from_slice::<Settings>(&buf);
 
     if deserialized.is_err() {
-        println!("Error parsing settings: {}", deserialized.err().unwrap());
+        tracing::debug!("Error parsing settings: {}", deserialized.err().unwrap());
         let settings = get_default_settings();
         write_settings(&settings);
         return settings;
@@ -85,7 +85,7 @@ pub fn write_settings(settings: &Settings) {
 
     let mut writer = std::fs::File::create(path).unwrap();
 
-    println!("Writing settings");
+    tracing::debug!("Writing settings");
     let pretty = serde_json::to_string_pretty(&settings);
     if pretty.is_err() {
         panic!("Error writing settings: {}", pretty.err().unwrap());
@@ -97,7 +97,7 @@ pub fn write_settings(settings: &Settings) {
         panic!("Error writing settings: {}", write.err().unwrap());
     }
 
-    println!("Settings written: {} bytes", write.unwrap());
+    tracing::debug!("Settings written: {} bytes", write.unwrap());
 }
 
 fn get_default_settings() -> Settings {
